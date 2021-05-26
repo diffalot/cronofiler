@@ -1,0 +1,91 @@
+# MDX processing of a VimWiki in Markdown
+
+Tags: :mdx: :neovim: :snippets: :journaling: :blogging:
+
+For privacy and easier syncing, Figure out how the multiple wiki thing works:
+
+1. laptop
+2. phone (will be accessing a specific directory on the server, but an app is
+   not out of the question)
+3. server
+
+
+### Syncroznizing the laptop journals to the cloud where they can be edited on my ;phone
+
+## Todo
+
+      # The Sync Up Commands
+
+      rsync -vaz -e ssh \
+            --progress --partial --update \
+            --exclude=".git" --exclude="diff.mx" \
+            --exclude-from="$HOME/.gitignore" \
+            --exclude-from="$HOME/cronofiles/.gitignore" \
+            ~/cronofiles/ o.lo:~/cronofiles/
+
+      rsync -vaz -e ssh \
+            --progress --partial --update \
+            --exclude=".git" --exclude="node_modules" \
+            --exclude-from="$HOME/.gitignore" \
+            --exclude-from="$HOME/cronofiles/.gitignore" \
+            ~/Desktop/cronofiler/ o.lo:~/Desktop/cronofiler/
+
+      # The Sync Down Command
+
+      rsync -vaz -e ssh \
+            --progress --partial --update \
+            --exclude ".git" \
+            ~/cronofiles/ o.lo:~/cronofiles/
+
+      # The Git Pull Command
+
+```
+❯ git fetch origin main:main
+remote: Enumerating objects: 23, done.
+remote: Counting objects: 100% (23/23), done.
+remote: Compressing objects: 100% (9/9), done.
+remote: Total 17 (delta 13), reused 12 (delta 8), pack-reused 0
+Unpacking objects: 100% (17/17), 2.17 KiB | 185.00 KiB/s, done.
+From github.com:diffalot/cronofile
+   7e4033c..2f6acf6  main       -> main
+   7e4033c..2f6acf6  main       -> origin/main
+~/cronofiles dev-macbook-manual ≡
+❯ git rebase main
+Successfully rebased and updated refs/heads/dev-macbook-manual.
+```
+
+- [ ] Turn rsync and git commands into scripts contolled from this laptop that
+      accept either up or down as the single argument
+      command into script that prepares to sync with server by committing
+      changes 3 minutes after last change comes in in a batch (probably when
+      I've closed out nvim and saved some files on the way, otherwise they're
+      probably changes made during the course of work, in which case there
+      should be a maximum amount of time that the 3 minutes has been
+      interrupted continually for 30 minutes, so we will attempt to sync
+      anyway.
+- [ ] periodically run git backups branches named
+      `periodic-(hostname)-(YYYY-MM-DD)`
+- [ ] No two systems should be writing at the same time since there is only one
+      one user who will be triggering the rsyncs through inotify by saving
+      files, but implement a
+      lockfile system where the system that wishes to push writes and syncs a
+      lock, then waits ~10 seconds to init transfer
+
+
+## I wish LsyncD worked on macOS, but it seems risky to use once, let alone
+continually through the work day and all night
+
+- [X] Get a command that syncs everything but the git folder using `lsyncd`
+        [manual](https://axkibe.github.io/lsyncd/)
+        [source code](https://github.com/axkibe/lsyncd)
+
+      > `lsyncd` is apparently not compatible with macOS because it cannot access
+      > fsevents for several years now and is imcompatible with time machine :(
+      > https://stackoverflow.com/questions/42451353/having-trouble-with-rsync-version-on-mac-when-using-it-with-lsyncd
+      >
+      >     lsyncd -exclude ".git" -rsyncssh ~/cronofile o.lo ~/cronofile-scp
+      >     lsyncd -log Exec -nodaemon lsyncd_to_olo.conf
+
+- [ ] Create `sync` users on each system with `rw` access to `/var/cronofile`
+- [ ] Give myself access to `/var/cronofile`
+- [ ] make that command run all the time via `systemd`
