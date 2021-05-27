@@ -26,7 +26,7 @@
 # collisions on main will not result in loss of data unless the individual
 # branches have suffered catastrophic failure.
 
-function cronofiler-git -a directory
+function cronofiler -a directory
     echo directory: $directory
     echo \$args:     $args
     

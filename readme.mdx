@@ -14,28 +14,8 @@ For privacy and easier syncing, Figure out how the multiple wiki thing works:
 
 ## Todo
 
-      # The Sync Up Commands
 
-      rsync -vaz -e ssh \
-            --progress --partial --update \
-            --exclude=".git" --exclude="diff.mx" \
-            --exclude-from="$HOME/.gitignore" \
-            --exclude-from="$HOME/cronofiles/.gitignore" \
-            ~/cronofiles/ o.lo:~/cronofiles/
 
-      rsync -vaz -e ssh \
-            --progress --partial --update \
-            --exclude=".git" --exclude="node_modules" \
-            --exclude-from="$HOME/.gitignore" \
-            --exclude-from="$HOME/cronofiles/.gitignore" \
-            ~/Desktop/cronofiler/ o.lo:~/Desktop/cronofiler/
-
-      # The Sync Down Command
-
-      rsync -vaz -e ssh \
-            --progress --partial --update \
-            --exclude ".git" \
-            ~/cronofiles/ o.lo:~/cronofiles/
 
       # The Git Pull Command
 
@@ -89,3 +69,35 @@ continually through the work day and all night
 - [ ] Create `sync` users on each system with `rw` access to `/var/cronofile`
 - [ ] Give myself access to `/var/cronofile`
 - [ ] make that command run all the time via `systemd`
+
+## The pure rsync sync system
+
+Had downsides including that there there would probably have to be separate
+scripts for downloading and upload from the server, while the git model using a
+single git repository as a centralized service provides easier use: "I am
+leaving this computer so it's time to sync, or I am opening this computer so
+it's time for me to sync.
+
+      # The rsync Up Commands
+
+      rsync -vaz -e ssh \
+            --progress --partial --update \
+            --exclude=".git" --exclude="diff.mx" \
+            --exclude-from="$HOME/.gitignore" \
+            --exclude-from="$HOME/cronofiles/.gitignore" \
+            ~/cronofiles/ o.lo:~/cronofiles/
+
+      rsync -vaz -e ssh \
+            --progress --partial --update \
+            --exclude=".git" --exclude="node_modules" \
+            --exclude-from="$HOME/.gitignore" \
+            --exclude-from="$HOME/cronofiles/.gitignore" \
+            ~/Desktop/cronofiler/ o.lo:~/Desktop/cronofiler/
+
+      # The rsync Down Command
+
+      rsync -vaz -e ssh \
+            --progress --partial --update \
+            --exclude ".git" \
+            ~/cronofiles/ o.lo:~/cronofiles/
+
