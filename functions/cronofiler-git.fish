@@ -29,9 +29,10 @@
 function cronofiler-git -a directory
     echo directory: $directory
     echo \$args:     $args
-
+    
+    # use local times, but make it explicit that it's zoned
     # 1. Check that todays branch exists;  if not, create it.
-    set -l todays_branch (date -u "+%Y-%m-%d-$hostname")
+    set -l todays_branch (date "+%Y-%m-%d-%Z-$hostname")
     if not contains $todays_branch (git -C $directory branch --list --format='%(refname:short)')
         git -C $directory checkout -b $todays_branch main
     end
@@ -45,7 +46,7 @@ function cronofiler-git -a directory
 
     # 3. if `git status` --porcelain has any output, there have been changes, add
     #    to the current branch with `git add . && git commit -m "MM/DD hh:mm:ss (hostname)"`
-    set -l commit_message (date -u "+%m/%d %H:%M:%S $hostname")
+    set -l commit_message (date "+%m/%d %H:%M:%S %Z ($hostname)")
     if test -n "(git -C $directory status--porcelain)"
         git -C $directory add .
         git -C $directory commit -m $commit_message
