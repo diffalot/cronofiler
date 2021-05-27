@@ -61,7 +61,7 @@ function cronofiler-git -a directory
     git -C $directory fetch . $todays_branch:main
 
     # 7. push main to origin with
-    #git -C $directory push origin main:main
+    git -C $directory push origin main:main
 
     # 8. for any error, push the current branch upstream with the last 1000 lines of
     #    the log attached as the commit message
